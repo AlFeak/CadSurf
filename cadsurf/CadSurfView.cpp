@@ -54,6 +54,7 @@ BEGIN_MESSAGE_MAP(CCadSurfView, CView)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_COORD, OnUpdateCoordViewer)
 	ON_UPDATE_COMMAND_UI(ID_PREFERENCES_MATERIAL, OnUpdatePreferencesMaterial)
 	ON_COMMAND(ID_PREFERENCES_COLOR, OnPreferencesColor)
+
 	ON_UPDATE_COMMAND_UI(ID_PREFERENCES_COLOR, OnUpdatePreferencesColor)
 	ON_COMMAND(ID_PREFERENCES_BACKGROUNDCOLOR, OnPreferencesBackgroundcolor)
 	ON_COMMAND(ID_HLREMOVED, OnHlremoved)
@@ -89,6 +90,7 @@ BEGIN_MESSAGE_MAP(CCadSurfView, CView)
 	ON_COMMAND(ID_FILE_PRINT, CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, CView::OnFilePrintPreview)
+	ON_COMMAND(ID_LIGHT_SOURCE, OnLightSource)
 	ON_COMMAND(ID_PREFERENCES_LIGHT, OnPreferencesLight)
 	ON_UPDATE_COMMAND_UI(ID_PREFERENCES_LIGHT, OnUpdatePreferencesLight)
 	ON_COMMAND(ID_SKECH_LINE, &CCadSurfView::OnSkechLine)
@@ -693,7 +695,6 @@ void CCadSurfView::OnUpdatePreferencesMaterial(CCmdUI* pCmdUI)
 	CGLDisplayContext* ctx = GetDocument()->dContext;
 	pCmdUI->Enable(ctx->HasSelected() && dShaded);
 }
-
 void CCadSurfView::OnPreferencesColor() 
 {
 	// TODO: Add your command handler code here
@@ -1072,12 +1073,44 @@ void CCadSurfView::OnUpdateProjectionType(CCmdUI* pCmdUI)
 		pCmdUI->SetCheck((aType == CGLView::GLPERSPECTIVE));
 	}	
 }
-
 #include "LightDlg.h"
+#include "GridDlg.h"
+void CCadSurfView::OnLightSource()
+{
+	CLightDlg dlg;
+	CColorDialog dlg1;
+	GLfloat m_Red;
+	GLfloat m_Green;
+	GLfloat m_Blue;
+	dlg1.m_cc.Flags |= CC_RGBINIT;
+	dlg1.m_cc.rgbResult = RGB(0, 0, 0);
+	if (dlg1.DoModal() == IDOK)
+	{
+		COLORREF color = dlg1.GetColor();
+		GLfloat m_Red = (GLfloat)GetRValue(color);
+		GLfloat m_Green = (GLfloat)GetGValue(color);
+		GLfloat m_Blue = (GLfloat)GetBValue(color);
+	}
+	if (dlg.DoModal() == IDOK)
+	{
+		GLfloat x, y, z, w, s, e, c;
+		x = dlg.m_x; y = dlg.m_y; z = dlg.m_z; w = dlg.m_w; s = dlg.m_s; e = dlg.m_e; c = dlg.m_c;
+		CGLDisplayContext* ctx = GetDocument()->dContext;
+		for (ctx->InitSelected(); ctx->MoreSelected(); ctx->NextSelected())
+		{
+			CGLObject* O = ctx->CurrentSelected();
+			O->SetMaterial(x, y, z, w, s, e, c);
+		}
+		InvalidateRect(NULL, FALSE);
+		GetDocument()->UpdateAllViews(NULL);
+	}
+}
+#include "LightDlg.h"
+#include "GridDlg.h"
 void CCadSurfView::OnPreferencesLight()
 {
 	// TODO: 在此添加命令处理程序代码
-	CLightDlg dlg;
+	/*CLightDlg dlg;
 	if(dlg.DoModal() == IDOK)
 	{
 		GLfloat x,y,z,w,s,e,c;
@@ -1091,8 +1124,27 @@ void CCadSurfView::OnPreferencesLight()
 		}
 		InvalidateRect(NULL, FALSE);
 		GetDocument()->UpdateAllViews(NULL);
-		
+}
+		*/
+	//liuyulin change light to background light
+	CColorDialog dlg;
+	dlg.m_cc.Flags |= CC_RGBINIT;
+	dlg.m_cc.rgbResult = RGB(0, 0, 0);
+	if (dlg.DoModal() == IDOK)
+	{
+		COLORREF color = dlg.GetColor();
+		GLfloat m_Red = (GLfloat)GetRValue(color);
+		GLfloat m_Green = (GLfloat)GetGValue(color);
+		GLfloat m_Blue = (GLfloat)GetBValue(color);
+
+		POSITION pos = GetDocument()->GetFirstViewPosition();
+		while (pos != NULL)
+		{
+			CCadSurfView* view = (CCadSurfView*)GetDocument()->GetNextView(pos);
+			view->GetView()->SetBackgroundColor(m_Red / 255, m_Green / 255, m_Blue / 255);
+		}
 	}
+	
 }
 
 

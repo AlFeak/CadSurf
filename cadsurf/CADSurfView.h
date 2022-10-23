@@ -146,6 +146,7 @@ protected:
 	afx_msg void OnUpdatePreferencesDisplaymodeWireframe(CCmdUI* pCmdUI);
 	afx_msg void OnPreferencesMaterial();
 	afx_msg void OnPreferencesLight();
+	afx_msg void OnLightSource();
 	afx_msg void OnUpdatePreferencesLight(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateCoordViewer(CCmdUI* pCmdUI); //Coordinates in Status Bar
 	afx_msg void OnUpdatePreferencesMaterial(CCmdUI* pCmdUI);

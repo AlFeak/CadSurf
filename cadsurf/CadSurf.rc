@@ -420,6 +420,7 @@ BEGIN
         END
         MENUITEM "Color",                       ID_PREFERENCES_COLOR
         MENUITEM "Light",                       ID_PREFERENCES_LIGHT
+        MENUITEM "light source",                           ID_LIGHT_SOURCE
         MENUITEM "Material",                    ID_PREFERENCES_MATERIAL
         POPUP "Line Style"
         BEGIN
