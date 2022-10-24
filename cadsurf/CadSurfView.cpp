@@ -1078,6 +1078,7 @@ void CCadSurfView::OnUpdateProjectionType(CCmdUI* pCmdUI)
 void CCadSurfView::OnLightSource()
 {
 	CLightDlg dlg;
+	CLight light[8];
 	CColorDialog dlg1;
 	GLfloat m_Red;
 	GLfloat m_Green;
@@ -1094,7 +1095,10 @@ void CCadSurfView::OnLightSource()
 	if (dlg.DoModal() == IDOK)
 	{
 		GLfloat x, y, z, w, s, e, c;
-		x = dlg.m_x; y = dlg.m_y; z = dlg.m_z; w = dlg.m_w; s = dlg.m_s; e = dlg.m_e; c = dlg.m_c;
+		for (int i = 0; i < 8; i++) {
+			light[i] = dlg.light[i];
+		}
+		/*x = dlg.m_x; y = dlg.m_y; z = dlg.m_z; w = dlg.m_w; s = dlg.m_s; e = dlg.m_e; c = dlg.m_c;
 		CGLDisplayContext* ctx = GetDocument()->dContext;
 		for (ctx->InitSelected(); ctx->MoreSelected(); ctx->NextSelected())
 		{
@@ -1103,6 +1107,13 @@ void CCadSurfView::OnLightSource()
 		}
 		InvalidateRect(NULL, FALSE);
 		GetDocument()->UpdateAllViews(NULL);
+		*/
+	}
+	POSITION pos = GetDocument()->GetFirstViewPosition();
+	while (pos != NULL)
+	{
+		CCadSurfView* view = (CCadSurfView*)GetDocument()->GetNextView(pos);
+		view->GetView()->SetLight(light,0);
 	}
 }
 #include "LightDlg.h"
